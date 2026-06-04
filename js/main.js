@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Simulate form submission
+      // Real form submission via Web3Forms
       const submitBtn = document.getElementById('contactSubmit');
       const originalText = submitBtn.innerHTML;
 
@@ -163,18 +163,41 @@ document.addEventListener('DOMContentLoaded', () => {
         Sending...
       `;
 
-      // Simulate a network delay
-      setTimeout(() => {
+      const formData = new FormData(contactForm);
+      formData.append('access_key', 'e08e1307-f220-45e3-9cea-8e09fc224c5f');
+
+      // Add a fallback subject if they left it blank
+      if (!formData.get('subject')) {
+        formData.append('subject', 'New Contact from Portfolio Site');
+      }
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(async (response) => {
+        if (response.status === 200) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+          contactForm.reset();
+
+          // Show success message
+          formSuccess.classList.add('show');
+          setTimeout(() => {
+            formSuccess.classList.remove('show');
+          }, 5000);
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+          alert('Something went wrong. Please try emailing directly.');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
-        contactForm.reset();
-
-        // Show success message
-        formSuccess.classList.add('show');
-        setTimeout(() => {
-          formSuccess.classList.remove('show');
-        }, 5000);
-      }, 1500);
+        alert('Network error. Please try emailing directly.');
+      });
     });
   }
 
