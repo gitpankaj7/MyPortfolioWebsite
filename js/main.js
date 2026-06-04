@@ -171,9 +171,17 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('subject', 'New Contact from Portfolio Site');
       }
 
+      // Convert FormData to JSON (recommended by Web3Forms for AJAX)
+      const object = Object.fromEntries(formData);
+      const json = JSON.stringify(object);
+
       fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: json
       })
       .then(async (response) => {
         if (response.status === 200) {
